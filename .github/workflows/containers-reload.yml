@@ -1,0 +1,23 @@
+name: Restart Docker Compose on VPS
+
+on:
+  workflow_run:
+    workflows: ["Docker Image CI"]
+    types:
+      - completed
+
+jobs:
+  restart-docker-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect to VPS via SSH and Restart Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /SharpTranslate
+            ls -la
+            ./run-docker-compose.sh
