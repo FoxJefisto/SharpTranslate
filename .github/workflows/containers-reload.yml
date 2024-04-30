@@ -18,6 +18,6 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            cd /SharpTranslate
+            cd SharpTranslate
             ls -la
-            ./run-docker-compose.sh
+            ./run-docker-compose.sh prod
