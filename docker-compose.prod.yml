@@ -4,9 +4,6 @@ services:
   content-service:
     container_name: sharp-translate
     image: foxjefisto/sharp-translate:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
     environment:
       ConnectionStrings__DefaultConnection: "Host=postgres_db;Port=5432;Database=sharp-translate-db-prod;Username=postgres;Password=${SECRET_PASSWORD};Integrated Security=true;Pooling=true;"
       TranslationServiceUrl: "http://translation-service:5000/translate"
@@ -20,7 +17,7 @@ services:
     container_name: libretranslate
     image: libretranslate/libretranslate:v1.5.6
     environment:
-      LT_LOAD_ONLY: "en,ru"
+      LT_LOAD_ONLY: ${AVAILABLE_LANGUAGES}
       ARGOS_DEBUG: 0
     ports:
       - "5002:5000"
@@ -44,5 +41,5 @@ services:
     image: containrrr/watchtower
     restart: always
     volumes:
-      - ../watchtower/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30 sharp-translate

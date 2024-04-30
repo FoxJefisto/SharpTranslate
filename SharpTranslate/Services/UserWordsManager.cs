@@ -27,15 +27,21 @@ namespace SharpTranslate.Services
 
         public int? AddWord(WordRequestBody? body)
         {
-            if (body == null || body.Word == null) 
+            if (body == null || body.Word == null || body.UserName == null) 
                 throw new ArgumentNullException("Неверное тело запроса");
 
             if (body.TargetWord == null)
                 throw new ArgumentNullException("Не найден перевод слова");
 
-            var user = _userRepository.GetUserById(body.UserId);
+            var user = _userRepository.GetUserByName(body.UserName);
             if (user == null)
-                throw new ArgumentException("Пользователь не найден");
+            {
+                user = new User
+                {
+                    UserName = body.UserName
+                };
+                _userRepository.AddUser(user);
+            }
 
             var wordOriginal = _wordRepository.GetWordByWordName(body.Word);
             if (wordOriginal == null)

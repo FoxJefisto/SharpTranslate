@@ -16,10 +16,17 @@ namespace SharpTranslate.Controllers
             _translateHelper = translateHelper;
         }
         [HttpPost("process")]
-        public async Task<TranslationResponse?> Process(Translate body)
+        public async Task<IActionResult> Process([FromBody]Translate body)
         {
-            var response = await _translateHelper.TranslateWordAsync(body);
-            return response;
+            try
+            {
+                var response = await _translateHelper.TranslateWordAsync(body);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
