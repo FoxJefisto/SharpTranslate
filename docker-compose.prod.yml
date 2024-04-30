@@ -3,6 +3,7 @@ version: "3.9"
 services:
   content-service:
     container_name: sharp-translate
+    image: foxjefisto/sharp-translate:latest
     build:
       context: .
       dockerfile: Dockerfile

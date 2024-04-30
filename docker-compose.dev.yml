@@ -3,6 +3,7 @@ version: "3.9"
 services:
   content-service:
     container_name: sharp-translate
+    image: foxjefisto/sharp-translate:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -44,4 +45,4 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30 foxjefisto/sharp-translate
+    command: --interval 30 sharp-translate
