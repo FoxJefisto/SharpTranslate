@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Check if the environment variable is set to "dev" or "prod"
+echo "Reloading docker containers..."
 if [ "$1" = "dev" ]; then
   docker-compose -f docker-compose.dev.yml down
   docker-compose -f docker-compose.dev.yml --env-file dev.env up --build --detach
@@ -11,6 +12,7 @@ else
   echo "Unknown environment: $1"
   exit 1
 fi
+echo "Containers is running"
 
 # Wait for the Postgres container to start
 COUNT=0
@@ -26,6 +28,7 @@ while [ "$(docker container inspect -f '{{.State.Running}}' postgres)" != "true"
     exit 1
   fi
 done
+echo "Postgres container is running"
 
 # Run EF Core migrations
 echo "Running EF Core migrations..."
