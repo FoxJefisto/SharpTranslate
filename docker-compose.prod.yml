@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  content-service:
+    container_name: sharp-translate
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres_db;Port=5432;Database=sharp-translate-db-prod;Username=postgres;Password=${SECRET_PASSWORD};Integrated Security=true;Pooling=true;"
+      TranslationServiceUrl: "http://translation-service:5000/translate"
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres_db
+      - translation-service
+  
+  translation-service:
+    container_name: libretranslate
+    image: libretranslate/libretranslate:v1.5.6
+    environment:
+      LT_LOAD_ONLY: "en,ru"
+      ARGOS_DEBUG: 0
+    ports:
+      - "5002:5000"
+    depends_on:
+      - postgres_db
+    volumes:
+      - ../libretranslate_cache_prod:/home/libretranslate/.local/share:z
+  
+  postgres_db:
+    container_name: postgres
+    image: postgres:16.2-alpine3.19
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${SECRET_PASSWORD}
+    ports:
+      - "6002:5432"
+    volumes:
+      - ../db_prod:/var/lib/postgresql/data
