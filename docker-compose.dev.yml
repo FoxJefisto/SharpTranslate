@@ -38,3 +38,10 @@ services:
       - "6001:5432"
     volumes:
       - ../db_dev:/var/lib/postgresql/data
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 foxjefisto/sharp-translate
