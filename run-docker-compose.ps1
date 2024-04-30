@@ -3,10 +3,10 @@ param ($env)
 
 if ($env -eq "dev") {
   docker-compose -f docker-compose.dev.yml down
-  docker-compose -f docker-compose.dev.yml --env-file dev.env up --build --detach
+  docker-compose -f docker-compose.dev.yml --env-file dev.env up -d
 } elseif ($env -eq "prod") {
   docker-compose -f docker-compose.prod.yml down
-  docker-compose -f docker-compose.prod.yml --env-file prod.env up --build --detach
+  docker-compose -f docker-compose.prod.yml --env-file prod.env up -d
 } else {
   Write-Host "Unknown environment: $env"
   exit 1
