@@ -3,12 +3,12 @@ env:
   DOCKERHUB_LOGIN: ${{ secrets.DOCKERHUB_LOGIN }}
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
   
-
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build project"]
+    types:
+      - completed
 
 jobs:
   ci-image:
