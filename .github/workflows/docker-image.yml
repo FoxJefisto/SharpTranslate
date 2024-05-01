@@ -21,3 +21,8 @@ jobs:
       run: docker login -u ${{ env.DOCKERHUB_LOGIN }} -p ${{ env.DOCKERHUB_PASSWORD }}
     - name: Publish the docker image
       run: docker push -a ${{ env.DOCKERHUB_LOGIN }}/sharp-translate
+    - name: Dispatch Restart Docker Compose workflow
+      uses: actions/workflow-dispatch@v1
+      with:
+        workflow: Restart Docker Compose on VPS
+        ref: main
