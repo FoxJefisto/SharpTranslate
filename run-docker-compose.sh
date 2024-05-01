@@ -17,24 +17,27 @@ echo "Containers is running"
 # Wait for the Postgres container to start
 COUNT=0
 MAX_COUNT=10
-sleep 10
+sleep 12
 
 while [ "$(docker container inspect -f '{{.State.Running}}' postgres)" != "true" ]; do
   echo "Waiting for container to start..."
   sleep 10
   COUNT=$((COUNT + 1))
   if [ $COUNT -ge $MAX_COUNT ]; then
-    echo "Timeout: container did not start within 3 minutes"
+    echo "Timeout: container did not start within 2 minutes"
     exit 1
   fi
 done
 echo "Postgres container is running"
+
+# Containers ps
+docker ps -a
 
 # Run EF Core migrations
 echo "Running EF Core migrations..."
 if [ "$1" = "dev" ]; then
   dotnet ef database update --project SharpTranslate -- --environment Development
 elif [ "$1" = "prod" ]; then
-  dotnet ef database update --project SharpTranslate
+  dotnet ef database update --project SharpTranslate -- --environment Production
 fi
 echo "EF Core migrations complete"
