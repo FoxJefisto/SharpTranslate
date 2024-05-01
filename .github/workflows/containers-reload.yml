@@ -21,7 +21,7 @@ jobs:
           script: |
             cd SharpTranslate
             ls -la
-            git pull
+            git pull --force
             chmod ugo+x run-docker-compose.sh
             ./run-docker-compose.sh prod
             dotnet ef database update --project SharpTranslate -- --environment Production
