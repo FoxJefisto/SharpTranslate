@@ -23,5 +23,7 @@ jobs:
             ls -la
             git pull --force
             chmod ugo+x run-docker-compose.sh
+            export dotnet-ef=/root/.dotnet/tools/dotnet-ef
+            export dotnet=/usr/bin/dotnet
             ./run-docker-compose.sh prod
-            dotnet ef database update --project SharpTranslate -- --environment Production
+            dotnet-ef database update --project SharpTranslate -- --environment Production
