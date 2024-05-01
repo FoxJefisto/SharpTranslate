@@ -1,6 +1,7 @@
 name: Restart Docker Compose on VPS
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["Docker Image CI"]
     types:
@@ -20,4 +21,5 @@ jobs:
           script: |
             cd SharpTranslate
             ls -la
+            git pull
             ./run-docker-compose.sh prod
