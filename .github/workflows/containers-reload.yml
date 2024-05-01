@@ -22,4 +22,5 @@ jobs:
             cd SharpTranslate
             ls -la
             git pull
+            chmod ugo+x run-docker-compose.sh
             ./run-docker-compose.sh prod
