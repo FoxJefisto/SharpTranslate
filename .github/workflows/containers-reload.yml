@@ -24,3 +24,4 @@ jobs:
             git pull
             chmod ugo+x run-docker-compose.sh
             ./run-docker-compose.sh prod
+            dotnet ef database update --project SharpTranslate -- --environment Production
