@@ -23,5 +23,6 @@ jobs:
             ls -la
             git pull
             chmod ugo+x run-docker-compose.sh
+            echo $PATH
+            PATH="/root/.dotnet/tools/:$PATH"
             ./run-docker-compose.sh prod
-            dotnet ef database update --project SharpTranslate -- --environment Production
