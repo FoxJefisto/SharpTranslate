@@ -46,7 +46,7 @@ docker ps -a
 # fi
 
 # Run EF Core migrations
-echo "Running EF Core migrations..."
+echo "Running EF Core migrations... Privet"
 if [ "$1" = "dev" ]; then
   dotnet-ef database update --project SharpTranslate -- --environment Development
 elif [ "$1" = "prod" ]; then
