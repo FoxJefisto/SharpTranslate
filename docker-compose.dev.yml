@@ -19,6 +19,7 @@ services:
   translation-service:
     container_name: libretranslate
     image: libretranslate/libretranslate:v1.5.6
+    restart: unless-stopped
     environment:
       LT_LOAD_ONLY: ${AVAILABLE_LANGUAGES}
       ARGOS_DEBUG: 1
