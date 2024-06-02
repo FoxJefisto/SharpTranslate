@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using SharpTranslate.Helpers;
 using SharpTranslate.Helpers.Interfaces;
@@ -7,8 +6,13 @@ using SharpTranslate.Repositories;
 using SharpTranslate.Repositories.Interfaces;
 using SharpTranslate.Services;
 using SharpTranslate.Services.Interfaces;
-using System.Text.Json.Serialization;
-using System.Text.Json;
+using SharpTranslate.Middlewares;
+using SharpTranslate.Middlewares.Models;
+using Serilog;
+using Serilog.Exceptions;
+using App.Metrics.Formatters.Prometheus;
+using App.Metrics.DotNetRuntime;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SharpTranslate
 {
@@ -22,7 +26,9 @@ namespace SharpTranslate
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var configuration = builder.Configuration;
+
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             builder.Services
                 .AddEntityFrameworkNpgsql()
@@ -37,6 +43,30 @@ namespace SharpTranslate
             builder.Services.AddTransient<IUserWordsManager, UserWordsManager>();
             builder.Services.AddTransient<IWordRequestResponseConverter, WordRequestResponseConverter>();
 
+            builder.Services.AddSingleton<RequestTracker>();
+
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .WriteTo.Debug()
+                .WriteTo.Console()
+                .Enrich.WithProperty("Environment", environment)
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+            builder.Host.UseSerilog();
+
+            builder.Host
+                .UseMetricsWebTracking(options =>
+                {
+                    options.OAuth2TrackingEnabled = true;
+                })
+                .UseMetricsEndpoints(options =>
+                {
+                options.EnvironmentInfoEndpointEnabled = true;
+                options.MetricsTextEndpointOutputFormatter = new MetricsPrometheusTextOutputFormatter();
+                options.MetricsEndpointOutputFormatter = new MetricsPrometheusTextOutputFormatter();
+                });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -50,6 +80,8 @@ namespace SharpTranslate
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseMiddleware<RequestTrackerMiddleware>();
 
             app.Run();
         }

@@ -7,6 +7,10 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Host=postgres_db;Port=5432;Database=sharp-translate-db-prod;Username=postgres;Password=${SECRET_PASSWORD};Integrated Security=true;Pooling=true;"
       TranslationServiceUrl: "http://translation-service:5000/translate"
+      ASPNETCORE_ENVIRONMENT: Production
+      Serilog__MinimumLevel__Default: Information
+      Serilog__MinimumLevel__Override__Microsoft: Information
+      Serilog__MinimumLevel__Override__System: Warning
     ports:
       - "80:80"
     depends_on:
@@ -25,7 +29,7 @@ services:
     depends_on:
       - postgres_db
     volumes:
-      - ../libretranslate_cache_prod:/home/libretranslate/.local/share:z
+      - ./libretranslate_cache_prod:/home/libretranslate/.local/share:z
   
   postgres_db:
     container_name: postgres
@@ -36,4 +40,55 @@ services:
     ports:
       - "6002:5432"
     volumes:
-      - ../db_prod:/var/lib/postgresql/data
+      - ./db_prod:/var/lib/postgresql/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+
+  grafana:
+    image: grafana/grafana
+    user: root
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+
+  # elasticsearch:
+  #   container_name: els
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+  #   ports:
+  #     - 9200:9200
+  #   volumes:
+  #     - ./elasticsearch_data:/usr/share/elasticsearch/data
+  #   environment:
+  #     - xpack.security.enabled=false
+  #     - discovery.type=single-node
+  
+  # kibana:
+  #   container_name: kibana
+  #   image: docker.elastic.co/kibana/kibana:8.7.1
+  #   ports:
+  #     - 5601:5601
+  #   depends_on:
+  #     - elasticsearch
+  #   environment:
+  #     - ELASTICSEARCH_URL=http://localhost:9200

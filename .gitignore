@@ -475,3 +475,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+db_dev
+grafana
+libretranslate_cache_dev
+prometheus
