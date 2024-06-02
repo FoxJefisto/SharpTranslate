@@ -22,8 +22,6 @@ namespace SharpTranslate.Middlewares
         {
             await _next(context);
 
-            DotNetRuntimeStatsBuilder.Default().StartCollecting(_metrics);
-
             // Получаем код состояния ответа
             int statusCode = context.Response.StatusCode;
 
