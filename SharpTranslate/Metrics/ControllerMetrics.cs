@@ -29,6 +29,13 @@ namespace SharpTranslate.Metrics
             Tags = new MetricTags(new[] { "Controller" }, new[] { "StatsController" })
         };
 
+        public static CounterOptions HealthRequestCounter => new CounterOptions
+        {
+            Context = "Controllers",
+            Name = "Health Requests Total",
+            MeasurementUnit = Unit.Requests
+        };
+
         public static CounterOptions TotalRequestCounter => new CounterOptions
         {
             Context = "Controllers",
