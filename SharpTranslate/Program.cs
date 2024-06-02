@@ -13,6 +13,8 @@ using Serilog.Exceptions;
 using App.Metrics.Formatters.Prometheus;
 using App.Metrics.DotNetRuntime;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 namespace SharpTranslate
 {
@@ -42,8 +44,22 @@ namespace SharpTranslate
             builder.Services.AddTransient<ITranslateHelper, TranslateHelper>();
             builder.Services.AddTransient<IUserWordsManager, UserWordsManager>();
             builder.Services.AddTransient<IWordRequestResponseConverter, WordRequestResponseConverter>();
+            // Configure forwarded headers
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.KnownProxies.Add(IPAddress.Parse("nginx"));
+            });
+
+            //builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            //{
+            //    options.ForwardedHeaders =
+            //        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            //});
 
             builder.Services.AddSingleton<RequestTracker>();
+            builder.Services
+                   .AddHealthChecks()
+                   .AddCheck<MyHealthCheck>("MyHealthCheck");
 
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -73,11 +89,9 @@ namespace SharpTranslate
             if (app.Environment.IsDevelopment())
             {
             }
-
+            //app.UseForwardedHeaders();
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            app.UseAuthorization();
 
             app.MapControllers();
 

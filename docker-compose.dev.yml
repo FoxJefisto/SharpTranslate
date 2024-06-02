@@ -81,16 +81,14 @@ services:
     volumes:
       - ./grafana:/var/lib/grafana
 
-  # nginx:
-  #   build: ./nginx
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - content-service
-  #     - content-service2
-    # volumes:
-    #   - ./nginx:/etc/nginx/sites-available/default
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - content-service
+      - content-service-repl
 
 
   # elasticsearch:
